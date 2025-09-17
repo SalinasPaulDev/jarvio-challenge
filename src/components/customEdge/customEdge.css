@@ -1,5 +1,3 @@
-/* src/components/edges/customEdge.css */
-
 .custom-edge-button {
   width: fit-content;
   padding: 0;
@@ -22,7 +20,6 @@
   border: none;
 }
 
-/* Hide button on mobile to prevent accidental deletion */
 @media (max-width: 768px) {
   .custom-edge-button {
     display: none;

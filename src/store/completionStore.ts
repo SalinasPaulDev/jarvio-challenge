@@ -1,4 +1,3 @@
-// src/store/completionStore.ts
 import { create } from "zustand";
 import {
   BlockType,
@@ -9,38 +8,16 @@ import {
 } from "../types/blocks";
 
 interface CompletionState {
-  // Map of blockId to completion status
-  blockCompletions: Record<string, boolean>;
-
-  // Actions
-  setBlockCompletion: (blockId: string, isComplete: boolean) => void;
-  getBlockCompletion: (blockId: string) => boolean;
   checkBlockCompletion: (
     blockId: string,
     blockType: BlockType,
     config: AIAgentConfig | AmazonSalesConfig | GmailConfig | SlackConfig | null
   ) => boolean;
-  resetAllCompletions: () => void;
 }
 
-export const useCompletionStore = create<CompletionState>((set, get) => ({
-  blockCompletions: {},
-
-  setBlockCompletion: (blockId: string, isComplete: boolean) =>
-    set((state) => ({
-      blockCompletions: {
-        ...state.blockCompletions,
-        [blockId]: isComplete,
-      },
-    })),
-
-  getBlockCompletion: (blockId: string) => {
-    const state = get();
-    return state.blockCompletions[blockId] ?? false;
-  },
-
+export const useCompletionStore = create<CompletionState>(() => ({
   checkBlockCompletion: (
-    blockId: string,
+    _blockId: string,
     blockType: BlockType,
     config: AIAgentConfig | AmazonSalesConfig | GmailConfig | SlackConfig | null
   ) => {
@@ -70,16 +47,8 @@ export const useCompletionStore = create<CompletionState>((set, get) => ({
         );
         break;
       default:
-        isComplete = true; // Default to complete for unknown types
+        isComplete = true;
     }
-
-    // Update the store with the current completion status
-    get().setBlockCompletion(blockId, isComplete);
     return isComplete;
   },
-
-  resetAllCompletions: () =>
-    set(() => ({
-      blockCompletions: {},
-    })),
 }));

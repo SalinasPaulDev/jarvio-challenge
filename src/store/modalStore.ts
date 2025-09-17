@@ -1,4 +1,3 @@
-// src/store/modalStore.ts
 import { create } from "zustand";
 import { BlockType } from "../types/blocks";
 
@@ -14,12 +13,10 @@ interface ModalStore extends ModalState {
 }
 
 export const useModalStore = create<ModalStore>((set) => ({
-  // Initial state
   isOpen: false,
   blockType: null,
   blockId: null,
 
-  // Actions
   openModal: (blockType: BlockType, blockId: string) => {
     set({
       isOpen: true,

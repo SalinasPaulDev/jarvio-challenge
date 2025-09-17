@@ -1,4 +1,3 @@
-// src/App.tsx
 import { useState, useCallback } from "react";
 import {
   ReactFlow,
@@ -20,7 +19,7 @@ import { useTestRunner } from "./hooks/useTestRunner";
 import { BlockType } from "./types/blocks";
 import { createBlock, BLOCK_METADATA } from "./utils/blocks";
 import { CustomBlock } from "./components/blocks";
-import BlockPalette from "./components/common/BlockPalette";
+import BlockPalette from "./components/common/BlockPalette/BlockPalette";
 import { useDragDrop } from "./hooks/useDragDrop";
 import "./components/blocks/CustomBlock.css";
 import { useBlockStates } from "./hooks/useBlockStates";
@@ -29,17 +28,18 @@ import ModalManager from "./components/config/ModalManager";
 import { CustomEdge } from "./components/customEdge/CustomEdge";
 import "@xyflow/react/dist/style.css";
 import "./components/customEdge/customEdge.css";
-import ProcessTracker from "./components/common/ProccessTracker";
+import ProcessTracker from "./components/common/ProcessTracker/ProccessTracker";
+import { AlertBlockWithoutEdges } from "./components/common/AlertBlockWithoutEdges/AlertBlockWithoutEdges";
 
 const nodeTypes = {
-  customBlock: CustomBlock, // Register our custom block component
+  customBlock: CustomBlock,
 };
 
 const edgeTypes = {
   custom: CustomEdge,
 };
 
-// Define initial nodes using our custom block system
+
 const initialNodes: Node[] = [
   {
     id: "amazon_1",
@@ -61,12 +61,11 @@ const initialNodes: Node[] = [
   },
 ];
 
-// Define initial edges showing the example flow: Amazon → AI Agent → Slack
 const initialEdges: Edge[] = [
   {
     id: "e_amazon_to_ai",
-    source: "amazon_1", // Source node ID
-    target: "ai_1", // Target node ID
+    source: "amazon_1",
+    target: "ai_1",
   },
   {
     id: "e_ai_to_slack",
@@ -76,10 +75,9 @@ const initialEdges: Edge[] = [
 ];
 
 function App() {
-  // useState hooks to manage nodes and edges state manually
   const [nodes, setNodes] = useState(initialNodes);
   const [edges, setEdges] = useState(initialEdges);
-  const { updateBlockState } = useBlockStates(nodes, setNodes);
+  const { updateBlockState } = useBlockStates(setNodes);
   const { isOpen, blockType, blockId, closeModal } = useModalStore();
   const { isRunning: testIsRunning, runTest } = useTestRunner(
     nodes,
@@ -89,35 +87,29 @@ function App() {
   const modalData =
     isOpen && blockType && blockId ? { blockType, blockId } : null;
 
-  // Add the drag and drop hook
   const { onDragStart, onDragOver, onDrop } = useDragDrop();
 
-  // Callback to handle node changes (drag, select, delete, etc.)
   const onNodesChange: OnNodesChange = useCallback(
     (changes) =>
       setNodes((nodesSnapshot) => applyNodeChanges(changes, nodesSnapshot)),
     []
   );
 
-  // Callback to handle edge changes (select, delete, etc.)
   const onEdgesChange: OnEdgesChange = useCallback(
     (changes) =>
       setEdges((edgesSnapshot) => applyEdgeChanges(changes, edgesSnapshot)),
     []
   );
 
-  // Callback to handle new connections between nodes
   const onConnect: OnConnect = useCallback(
     (params) => setEdges((edgesSnapshot) => addEdge(params, edgesSnapshot)),
     []
   );
 
-  // Add function to handle dropping new blocks
   const handleDrop = useCallback(
     (event: React.DragEvent) => {
       const newNode = onDrop(event);
       if (newNode) {
-        // Add the new node to our nodes array
         setNodes((nds) => [...nds, newNode]);
       }
     },
@@ -126,7 +118,6 @@ function App() {
 
   return (
     <div style={{ width: "100vw", height: "100vh" }}>
-      {/* Block Palette */}
       <BlockPalette
         onDragStart={onDragStart}
         onRunTest={runTest}
@@ -134,7 +125,6 @@ function App() {
         isDisabled={nodes.length === 0}
       />
 
-      {/* ReactFlow component with drag and drop handlers */}
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -186,11 +176,11 @@ function App() {
         }}
       />
       <ProcessTracker />
+      <AlertBlockWithoutEdges />
     </div>
   );
 }
 
-// Wrapper component with ReactFlowProvider
 function AppWithProvider() {
   return (
     <ReactFlowProvider>

@@ -1,6 +1,3 @@
-/* src/components/configs/configForm.css */
-
-/* Configuration Form Container */
 .configForm {
   padding: 24px;
   padding-bottom: 50px;
@@ -8,7 +5,6 @@
   width: 100%;
 }
 
-/* Header Section */
 .configFormHeader {
   margin-bottom: 24px;
   text-align: center;
@@ -37,7 +33,6 @@
   line-height: 1.5;
 }
 
-/* Form Fields */
 .configFormFields {
   display: flex;
   flex-direction: column;
@@ -64,7 +59,6 @@
   font-size: 12px;
 }
 
-/* Input Styles */
 .configFormInput,
 .configFormSelect,
 .configFormTextarea {
@@ -90,14 +84,12 @@
   color: #9ca3af;
 }
 
-/* Textarea Specific */
 .configFormTextarea {
   resize: vertical;
   min-height: 80px;
   font-family: inherit;
 }
 
-/* Select Specific */
 .configFormSelect {
   cursor: pointer;
   appearance: none;
@@ -108,7 +100,6 @@
   padding-right: 32px;
 }
 
-/* Help Text */
 .configFormHelp {
   font-size: 12px;
   color: #6b7280;
@@ -116,7 +107,6 @@
   line-height: 1.4;
 }
 
-/* Action Buttons */
 .configFormActions {
   margin-top: 32px;
   display: flex;
@@ -160,7 +150,6 @@
   background-color: #f3f4f6;
 }
 
-/* Error States */
 .configFormField--error .configFormInput,
 .configFormField--error .configFormSelect,
 .configFormField--error .configFormTextarea {
@@ -174,7 +163,6 @@
   margin-top: 4px;
 }
 
-/* Success States */
 .configFormField--success .configFormInput,
 .configFormField--success .configFormSelect,
 .configFormField--success .configFormTextarea {

@@ -1,4 +1,3 @@
-// src/components/configs/AmazonConfig.tsx
 import React, { useState, useEffect } from "react";
 import { useConfigStore } from "../../store/configStore";
 import { type AmazonSalesConfig } from "../../types/blocks";
@@ -17,18 +16,15 @@ const AmazonConfig: React.FC<AmazonConfigProps> = ({
 }) => {
   const { getAmazonConfig, updateAmazonConfig } = useConfigStore();
 
-  // Local state for form
   const [config, setConfig] = useState<AmazonSalesConfig>(() =>
     getAmazonConfig(blockId)
   );
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  // Update local state when blockId changes
   useEffect(() => {
     setConfig(getAmazonConfig(blockId));
   }, [blockId, getAmazonConfig]);
 
-  // Validation function
   const validateConfig = (
     configToValidate: AmazonSalesConfig
   ): Record<string, string> => {
@@ -45,7 +41,6 @@ const AmazonConfig: React.FC<AmazonConfigProps> = ({
     return newErrors;
   };
 
-  // Handle form submission
   const handleSave = () => {
     const validationErrors = validateConfig(config);
     setErrors(validationErrors);
@@ -56,11 +51,9 @@ const AmazonConfig: React.FC<AmazonConfigProps> = ({
     }
   };
 
-  // Handle input changes
   const handleChange = (field: keyof AmazonSalesConfig, value: string) => {
     setConfig((prev) => ({ ...prev, [field]: value }));
 
-    // Clear error when user starts typing
     if (errors[field]) {
       setErrors((prev) => ({ ...prev, [field]: "" }));
     }
@@ -68,14 +61,12 @@ const AmazonConfig: React.FC<AmazonConfigProps> = ({
 
   return (
     <div className="configForm">
-      {/* Header */}
       <div className="configFormHeader">
         <img
           src="/amazon-icon.png"
           alt="Amazon Sales"
           className="configFormIcon"
           onError={(e) => {
-            // Fallback if image doesn't exist
             e.currentTarget.style.display = "none";
           }}
         />
@@ -86,9 +77,7 @@ const AmazonConfig: React.FC<AmazonConfigProps> = ({
         </p>
       </div>
 
-      {/* Form Fields */}
       <div className="configFormFields">
-        {/* Metric Selection */}
         <div
           className={`configFormField ${
             errors.metric ? "configFormField--error" : ""
@@ -115,7 +104,6 @@ const AmazonConfig: React.FC<AmazonConfigProps> = ({
           </div>
         </div>
 
-        {/* Timeframe Selection */}
         <div
           className={`configFormField ${
             errors.timeframe ? "configFormField--error" : ""
@@ -141,7 +129,6 @@ const AmazonConfig: React.FC<AmazonConfigProps> = ({
         </div>
       </div>
 
-      {/* Action Buttons */}
       <div className="configFormActions">
         <button
           className="configFormButton configFormButtonSecondary"

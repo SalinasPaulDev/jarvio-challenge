@@ -1,4 +1,3 @@
-// src/components/blocks/CustomBlock.tsx
 import React, { useMemo } from "react";
 import { Handle, Position, type NodeProps } from "@xyflow/react";
 import { BlockState, BlockType, type BlockData } from "../../types/blocks";
@@ -9,12 +8,10 @@ import { useConfigStore } from "../../store/configStore";
 import { useCompletionStore } from "../../store/completionStore";
 import "./customBlock.css";
 
-// Props for our custom block component
 interface CustomBlockProps extends NodeProps {
-  data: BlockData; // Our custom block data
+  data: BlockData;
 }
 
-// Helper functions for conditional styling (same as before)
 const getBlockClassName = (selected: boolean, state: BlockState): string => {
   let className = "customBlock";
 
@@ -57,19 +54,14 @@ const getStateClassName = (state: BlockState): string => {
   return className;
 };
 
-// Custom block component that will replace the default React Flow nodes
 const CustomBlock: React.FC<CustomBlockProps> = ({ id, data, selected }) => {
-  // Get metadata for this block type (color, icon, etc.)
   const metadata = BLOCK_METADATA[data.type];
 
-  // Get modal functions from Zustand store
   const { openModal } = useModalStore();
   const { getAIConfig, getAmazonConfig, getGmailConfig, getSlackConfig } =
     useConfigStore();
   const { checkBlockCompletion } = useCompletionStore();
 
-  // Get the current configuration for this block type
-  // This is called on every render to ensure we get the latest config values
   const currentConfig = (() => {
     switch (data.type) {
       case BlockType.AI_AGENT:
@@ -84,13 +76,11 @@ const CustomBlock: React.FC<CustomBlockProps> = ({ id, data, selected }) => {
         return null;
     }
   })();
-  // Check if block configuration is complete
   const isBlockComplete = useMemo((): boolean => {
-    if (!currentConfig) return true; // Unknown types are considered complete
+    if (!currentConfig) return true;
     return checkBlockCompletion(id, data.type, currentConfig);
   }, [id, data.type, currentConfig, checkBlockCompletion]);
 
-  // Get background color for incomplete blocks (gray) or normal block color
   const getIncompleteBlockColor = (): string => {
     return isBlockComplete ? metadata.color : "#C9CDCF";
   };
@@ -99,29 +89,24 @@ const CustomBlock: React.FC<CustomBlockProps> = ({ id, data, selected }) => {
     state: BlockState,
     metadata: { color: string }
   ): string => {
-    // For IDLE state, check if block configuration is complete
     if (state === BlockState.IDLE) {
       const incompleteColor = getIncompleteBlockColor();
       if (incompleteColor !== metadata.color) {
-        return incompleteColor; // Gray color for incomplete blocks
+        return incompleteColor;
       }
-      return metadata.color; // Use block type color when idle and complete
+      return metadata.color;
     }
 
-    // For all other states (RUNNING, SUCCESS, ERROR), use normal state colors
     if (state === BlockState.ERROR) {
-      return "#EF4444"; // Red color for error state
+      return "#EF4444";
     }
 
-    return getBlockStateColor(state); // Use state color for running/success
+    return getBlockStateColor(state);
   };
 
-  // Handle block click to open configuration modal
   const handleBlockClick = (event: React.MouseEvent) => {
-    // Prevent event from bubbling to ReactFlow (which would deselect the node)
     event.stopPropagation();
 
-    // Open the configuration modal for this block
     openModal(data.type, id);
   };
 
@@ -131,9 +116,8 @@ const CustomBlock: React.FC<CustomBlockProps> = ({ id, data, selected }) => {
       style={{
         background: getBlockBackgroundColor(data.state, metadata),
       }}
-      onClick={handleBlockClick} // Add click handler
+      onClick={handleBlockClick}
     >
-      {/* Block icon and label */}
       <div className={getIconClassName(data.state)}>
         {data.state === BlockState.SUCCESS ? (
           "✅"
@@ -150,14 +134,16 @@ const CustomBlock: React.FC<CustomBlockProps> = ({ id, data, selected }) => {
 
       <div className="customBlockLabel">{data.label}</div>
 
-      {/* Show configuration warning text only for incomplete IDLE blocks */}
       {data.state === BlockState.IDLE && !isBlockComplete && (
         <div className="customBlockIncompleteText">
           Complete the configuration
         </div>
       )}
 
-      {/* Show current state for feedback */}
+      {data.state === BlockState.IDLE && (
+        <div className="customBlockIdleState">{data.state}</div>
+      )}
+
       {data.state !== BlockState.IDLE && (
         <div className={getStateClassName(data.state)}>
           {data.state === BlockState.RUNNING && "⚡ "}
@@ -165,25 +151,22 @@ const CustomBlock: React.FC<CustomBlockProps> = ({ id, data, selected }) => {
         </div>
       )}
 
-      {/* Configuration icon/indicator */}
       <div className="customBlockConfigIcon" title="Click to configure">
         <Settings />
       </div>
 
-      {/* Input handle - connection point where other blocks can connect TO this block */}
       <Handle
         type="target"
         position={Position.Left}
         isConnectable={true}
-        onClick={(e) => e.stopPropagation()} // Prevent opening modal when clicking handles
+        onClick={(e) => e.stopPropagation()}
       />
 
-      {/* Output handle - connection point where this block can connect to other blocks */}
       <Handle
         type="source"
         position={Position.Right}
         isConnectable={true}
-        onClick={(e) => e.stopPropagation()} // Prevent opening modal when clicking handles
+        onClick={(e) => e.stopPropagation()}
       />
     </div>
   );

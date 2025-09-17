@@ -1,38 +1,28 @@
-// src/store/configStore.ts
 import { create } from "zustand";
 import {
   type AmazonSalesConfig,
   type AIAgentConfig,
   type GmailConfig,
   type SlackConfig,
-  BlockType,
 } from "../types/blocks";
 
-// Store interface for managing block configurations
 interface ConfigStore {
-  // Configurations for each block instance (keyed by block ID)
   amazonConfigs: Record<string, AmazonSalesConfig>;
   aiConfigs: Record<string, AIAgentConfig>;
   gmailConfigs: Record<string, GmailConfig>;
   slackConfigs: Record<string, SlackConfig>;
 
-  // Actions to update configurations
   updateAmazonConfig: (blockId: string, config: AmazonSalesConfig) => void;
   updateAIConfig: (blockId: string, config: AIAgentConfig) => void;
   updateGmailConfig: (blockId: string, config: GmailConfig) => void;
   updateSlackConfig: (blockId: string, config: SlackConfig) => void;
 
-  // Getters for configurations with defaults
   getAmazonConfig: (blockId: string) => AmazonSalesConfig;
   getAIConfig: (blockId: string) => AIAgentConfig;
   getGmailConfig: (blockId: string) => GmailConfig;
   getSlackConfig: (blockId: string) => SlackConfig;
-
-  // Clear configuration for a specific block
-  clearConfig: (blockId: string, blockType: BlockType) => void;
 }
 
-// Default configurations
 const DEFAULT_AMAZON_CONFIG: AmazonSalesConfig = {
   metric: "revenue",
   timeframe: "last_7_days",
@@ -54,7 +44,6 @@ const DEFAULT_SLACK_CONFIG: SlackConfig = {
   message: "Sales report has been generated.",
 };
 
-// Create the Zustand store
 export const useConfigStore = create<ConfigStore>((set, get) => ({
   amazonConfigs: {},
   aiConfigs: {},
@@ -111,28 +100,5 @@ export const useConfigStore = create<ConfigStore>((set, get) => ({
 
   getSlackConfig: (blockId: string) => {
     return get().slackConfigs[blockId] || DEFAULT_SLACK_CONFIG;
-  },
-
-  clearConfig: (blockId: string, blockType: BlockType) => {
-    set((state) => {
-      const newState = { ...state };
-
-      switch (blockType) {
-        case BlockType.AMAZON_SALES:
-          delete newState.amazonConfigs[blockId];
-          break;
-        case BlockType.AI_AGENT:
-          delete newState.aiConfigs[blockId];
-          break;
-        case BlockType.GMAIL:
-          delete newState.gmailConfigs[blockId];
-          break;
-        case BlockType.SLACK:
-          delete newState.slackConfigs[blockId];
-          break;
-      }
-
-      return newState;
-    });
   },
 }));

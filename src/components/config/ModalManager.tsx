@@ -1,9 +1,8 @@
-// src/components/configs/ModalManager.tsx
 import AmazonConfig from "./AmazonConfig";
 import AIConfig from "./AIConfig";
 import GmailConfig from "./GmailConfig";
 import SlackConfig from "./SlackConfig";
-import ConfigModal from "../common/ConfigModal";
+import ConfigModal from "../common/ConfigModal/ConfigModal";
 import { BlockType } from "../../types/blocks";
 import { BLOCK_METADATA } from "../../utils/blocks";
 
@@ -22,12 +21,10 @@ export default function ModalManager({
   onOpenChange,
 }: ModalManagerProps) {
   const handleSave = () => {
-    // Close modal after saving
     onOpenChange(null);
   };
 
   const handleCancel = () => {
-    // Close modal without saving
     onOpenChange(null);
   };
 

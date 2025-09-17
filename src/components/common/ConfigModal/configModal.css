@@ -1,6 +1,3 @@
-/* src/components/common/configModal.css */
-
-/* Modal Overlay */
 .configModalOverlay {
   position: fixed;
   top: 0;
@@ -16,7 +13,6 @@
   animation: fadeIn 0.2s ease-out;
 }
 
-/* Modal Container */
 .configModal {
   background: white;
   border-radius: 12px;
@@ -31,7 +27,6 @@
   position: relative;
 }
 
-/* Modal Header */
 .configModalHeader {
   display: flex;
   align-items: center;
@@ -72,7 +67,6 @@
   background-color: #e5e7eb;
 }
 
-/* Modal Content */
 .configModalContent {
   display: flex;
   justify-content: center;
@@ -82,7 +76,6 @@
   max-height: calc(90vh - 80px);
 }
 
-/* Modal without header */
 .configModal:not(:has(.configModalHeader)) .configModalContent {
   padding: 24px;
 }
@@ -98,7 +91,6 @@
   scrollbar-width: none;
 }
 
-/* Animations */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -119,7 +111,6 @@
   }
 }
 
-/* Responsive Design */
 @media (max-width: 640px) {
   .configModalOverlay {
     padding: 16px;
@@ -143,12 +134,10 @@
   }
 }
 
-/* Focus management */
 .configModal:focus {
   outline: none;
 }
 
-/* Backdrop click area */
 .configModalOverlay::before {
   content: "";
   position: absolute;

@@ -1,12 +1,11 @@
-// src/store/processTrackerStore.ts
 import { create } from "zustand";
 import {
   BlockType,
   BlockState,
   type AIAgentConfig,
+  type AmazonSalesConfig,
   type SlackConfig,
   type GmailConfig,
-  type AmazonSalesConfig,
 } from "../types/blocks";
 
 export interface ProcessStep {
@@ -17,44 +16,45 @@ export interface ProcessStep {
   message: string;
   errorMessage?: string;
   timestamp: number;
+  levelIndex: number;
+}
+
+export interface ExecutionLevel {
+  levelIndex: number;
+  steps: ProcessStep[];
+  isComplete: boolean;
+  hasError: boolean;
 }
 
 interface ProcessTrackerState {
-  // Current process state
   isRunning: boolean;
-  currentStep: number;
+  currentLevel: number;
+  totalLevels: number;
+  levels: ExecutionLevel[];
   totalSteps: number;
-  steps: ProcessStep[];
-
-  // Overall process message
   processMessage: string;
 
-  // Actions
-  startProcess: (totalSteps: number) => void;
+  startProcess: (totalSteps: number, totalLevels: number) => void;
   updateStep: (
-    stepIndex: number,
+    _stepIndex: number,
     blockId: string,
     blockType: BlockType,
     blockLabel: string,
     state: BlockState,
-    config?:
-      | AIAgentConfig
-      | AmazonSalesConfig
-      | GmailConfig
-      | SlackConfig
-      | null,
+    levelIndex: number,
+    config?: AIAgentConfig | AmazonSalesConfig | GmailConfig | SlackConfig,
     errorMessage?: string
   ) => void;
+  setCurrentLevel: (level: number) => void;
   completeProcess: () => void;
   resetProcess: () => void;
   setProcessMessage: (message: string) => void;
 }
 
-// Helper function to generate step messages based on block type and config
 const generateStepMessage = (
   blockType: BlockType,
   state: BlockState,
-  config?: AIAgentConfig | AmazonSalesConfig | GmailConfig | SlackConfig | null,
+  config?: AIAgentConfig | AmazonSalesConfig | GmailConfig | SlackConfig,
   errorMessage?: string
 ): string => {
   if (state === BlockState.ERROR) {
@@ -64,9 +64,9 @@ const generateStepMessage = (
   switch (blockType) {
     case BlockType.AMAZON_SALES:
       if (state === BlockState.RUNNING) {
-        const metric = (config as AmazonSalesConfig)?.metric || "sales data";
-        const timeframe =
-          (config as AmazonSalesConfig)?.timeframe || "specified timeframe";
+        const currentConfig = config as AmazonSalesConfig;
+        const metric = currentConfig?.metric || "sales data";
+        const timeframe = currentConfig?.timeframe || "specified timeframe";
         return `Fetching ${metric} for ${timeframe}...`;
       } else if (state === BlockState.SUCCESS) {
         return "Successfully retrieved Amazon sales data";
@@ -75,12 +75,7 @@ const generateStepMessage = (
 
     case BlockType.AI_AGENT:
       if (state === BlockState.RUNNING) {
-        const systemPrompt =
-          (config as AIAgentConfig)?.systemPrompt || "specified system prompt";
-        return `AI is analyzing the data and generating insights to ${systemPrompt.slice(
-          0,
-          30
-        )}...`;
+        return "AI is analyzing the data and generating insights...";
       } else if (state === BlockState.SUCCESS) {
         return "AI analysis completed successfully";
       }
@@ -88,8 +83,9 @@ const generateStepMessage = (
 
     case BlockType.GMAIL:
       if (state === BlockState.RUNNING) {
+        const currentConfig = config as GmailConfig;
         const recipient =
-          (config as GmailConfig)?.recipientEmail || "specified recipient";
+          currentConfig?.recipientEmail || "specified recipient";
         return `Sending email to ${recipient}...`;
       } else if (state === BlockState.SUCCESS) {
         return "Email sent successfully";
@@ -98,7 +94,8 @@ const generateStepMessage = (
 
     case BlockType.SLACK:
       if (state === BlockState.RUNNING) {
-        const channel = (config as SlackConfig)?.channel || "specified channel";
+        const currentConfig = config as SlackConfig;
+        const channel = currentConfig?.channel || "specified channel";
         return `Sending message to ${channel}...`;
       } else if (state === BlockState.SUCCESS) {
         return "Slack message sent successfully";
@@ -112,47 +109,43 @@ const generateStepMessage = (
 
 export const useProcessTrackerStore = create<ProcessTrackerState>((set) => ({
   isRunning: false,
-  currentStep: 0,
+  currentLevel: 0,
+  totalLevels: 0,
+  levels: [],
   totalSteps: 0,
-  steps: [],
   processMessage: "Ready to run test: click the 'Run Test' button to start",
 
-  startProcess: (totalSteps: number) =>
+  startProcess: (totalSteps: number, totalLevels: number) =>
     set({
       isRunning: true,
-      currentStep: 0,
+      currentLevel: 0,
+      totalLevels,
       totalSteps,
-      steps: Array(totalSteps)
+      levels: Array(totalLevels)
         .fill(null)
         .map((_, index) => ({
-          id: `step-${index}`,
-          blockType: BlockType.AMAZON_SALES, // Will be updated
-          blockLabel: "Loading...",
-          state: BlockState.IDLE,
-          message: "Waiting to start...",
-          timestamp: Date.now(),
+          levelIndex: index,
+          steps: [],
+          isComplete: false,
+          hasError: false,
         })),
-      processMessage: `Starting test execution with ${totalSteps} step${
-        totalSteps > 1 ? "s" : ""
-      }...`,
+      processMessage: `Starting test execution with ${totalLevels} level${
+        totalLevels > 1 ? "s" : ""
+      } (${totalSteps} total blocks)...`,
     }),
 
   updateStep: (
-    stepIndex: number,
+    _stepIndex: number,
     blockId: string,
     blockType: BlockType,
     blockLabel: string,
     state: BlockState,
-    config?:
-      | AIAgentConfig
-      | AmazonSalesConfig
-      | GmailConfig
-      | SlackConfig
-      | null,
+    levelIndex: number,
+    config?: AIAgentConfig | AmazonSalesConfig | GmailConfig | SlackConfig,
     errorMessage?: string
   ) =>
     set((prevState) => {
-      const newSteps = [...prevState.steps];
+      const newLevels = [...prevState.levels];
       const message = generateStepMessage(
         blockType,
         state,
@@ -160,42 +153,79 @@ export const useProcessTrackerStore = create<ProcessTrackerState>((set) => ({
         errorMessage
       );
 
-      if (newSteps[stepIndex]) {
-        newSteps[stepIndex] = {
-          id: blockId,
-          blockType,
-          blockLabel,
-          state,
-          message,
-          errorMessage,
-          timestamp: Date.now(),
+      const step: ProcessStep = {
+        id: blockId,
+        blockType,
+        blockLabel,
+        state,
+        message,
+        errorMessage,
+        timestamp: Date.now(),
+        levelIndex,
+      };
+
+      if (!newLevels[levelIndex]) {
+        newLevels[levelIndex] = {
+          levelIndex,
+          steps: [],
+          isComplete: false,
+          hasError: false,
         };
       }
 
+      const existingStepIndex = newLevels[levelIndex].steps.findIndex(
+        (s) => s.id === blockId
+      );
+      if (existingStepIndex >= 0) {
+        newLevels[levelIndex].steps[existingStepIndex] = step;
+      } else {
+        newLevels[levelIndex].steps.push(step);
+      }
+
+      const levelSteps = newLevels[levelIndex].steps;
+      newLevels[levelIndex].hasError = levelSteps.some(
+        (s) => s.state === BlockState.ERROR
+      );
+      newLevels[levelIndex].isComplete =
+        !newLevels[levelIndex].hasError &&
+        levelSteps.length > 0 &&
+        levelSteps.every((s) => s.state === BlockState.SUCCESS);
+
       let processMessage = prevState.processMessage;
 
-      // Update overall process message based on current state
       if (state === BlockState.RUNNING) {
-        processMessage = `Step ${stepIndex + 1} of ${
-          prevState.totalSteps
-        }: ${message}`;
+        processMessage = `Level ${levelIndex + 1}: Executing ${
+          levelSteps.filter((s) => s.state === BlockState.RUNNING).length
+        } block${
+          levelSteps.filter((s) => s.state === BlockState.RUNNING).length > 1
+            ? "s"
+            : ""
+        }...`;
+      } else if (state === BlockState.ERROR) {
+        processMessage = `Error in Level ${levelIndex + 1}: ${message}`;
       } else if (
-        state === BlockState.SUCCESS &&
-        stepIndex === prevState.totalSteps - 1
+        newLevels[levelIndex].isComplete &&
+        levelIndex === prevState.totalLevels - 1
       ) {
         processMessage = "Test execution completed successfully!";
-      } else if (state === BlockState.ERROR) {
-        processMessage = `Error in step ${stepIndex + 1}: ${message}`;
+      } else if (newLevels[levelIndex].isComplete) {
+        processMessage = `Level ${levelIndex + 1} completed. Moving to Level ${
+          levelIndex + 2
+        }...`;
       }
 
       return {
         ...prevState,
-        steps: newSteps,
-        currentStep:
-          state === BlockState.RUNNING ? stepIndex : prevState.currentStep,
+        levels: newLevels,
         processMessage,
       };
     }),
+
+  setCurrentLevel: (level: number) =>
+    set((prevState) => ({
+      ...prevState,
+      currentLevel: level,
+    })),
 
   completeProcess: () =>
     set((prevState) => ({
@@ -207,9 +237,10 @@ export const useProcessTrackerStore = create<ProcessTrackerState>((set) => ({
   resetProcess: () =>
     set({
       isRunning: false,
-      currentStep: 0,
+      currentLevel: 0,
+      totalLevels: 0,
+      levels: [],
       totalSteps: 0,
-      steps: [],
       processMessage: "Ready to run test: click the 'Run Test' button to start",
     }),
 

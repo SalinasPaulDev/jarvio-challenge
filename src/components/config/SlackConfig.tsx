@@ -1,4 +1,3 @@
-// src/components/configs/SlackConfig.tsx
 import React, { useState, useEffect } from "react";
 import { useConfigStore } from "../../store/configStore";
 import { type SlackConfig as SlackConfigType } from "../../types/blocks";
@@ -16,26 +15,21 @@ const SlackConfig: React.FC<SlackConfigProps> = ({
   onCancel,
 }) => {
   const { getSlackConfig, updateSlackConfig } = useConfigStore();
-
-  // Local state for form
   const [config, setConfig] = useState<SlackConfigType>(() =>
     getSlackConfig(blockId)
   );
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  // Update local state when blockId changes
   useEffect(() => {
     setConfig(getSlackConfig(blockId));
   }, [blockId, getSlackConfig]);
 
-  // Channel validation function
   const isValidChannel = (channel: string): boolean => {
     // Must start with # and contain valid characters
     const channelRegex = /^#[a-z0-9_-]+$/;
     return channelRegex.test(channel.toLowerCase());
   };
 
-  // Validation function
   const validateConfig = (
     configToValidate: SlackConfigType
   ): Record<string, string> => {
@@ -63,7 +57,6 @@ const SlackConfig: React.FC<SlackConfigProps> = ({
     return newErrors;
   };
 
-  // Handle form submission
   const handleSave = () => {
     const validationErrors = validateConfig(config);
     setErrors(validationErrors);
@@ -74,17 +67,14 @@ const SlackConfig: React.FC<SlackConfigProps> = ({
     }
   };
 
-  // Handle input changes
   const handleChange = (field: keyof SlackConfigType, value: string) => {
     setConfig((prev) => ({ ...prev, [field]: value }));
 
-    // Clear error when user starts typing
     if (errors[field]) {
       setErrors((prev) => ({ ...prev, [field]: "" }));
     }
   };
 
-  // Common Slack channels
   const commonChannels = [
     "#general",
     "#sales",
@@ -95,37 +85,8 @@ const SlackConfig: React.FC<SlackConfigProps> = ({
     "#business-intel",
   ];
 
-  //   // Message templates
-  //   const messageTemplates = [
-  //     {
-  //       label: "Sales Alert",
-  //       value:
-  //         "📊 Sales report is ready! Check out the latest performance data and insights.",
-  //     },
-  //     {
-  //       label: "Weekly Summary",
-  //       value:
-  //         "📈 Weekly sales summary has been generated. Key metrics and trends are now available for review.",
-  //     },
-  //     {
-  //       label: "Performance Update",
-  //       value:
-  //         "🎯 Performance update: New sales analysis completed with actionable insights.",
-  //     },
-  //     {
-  //       label: "Data Notification",
-  //       value:
-  //         "🔔 Automated sales data analysis has finished processing. Results are ready for your team.",
-  //     },
-  //     {
-  //       label: "Simple Alert",
-  //       value: "Sales report has been generated and is ready for review.",
-  //     },
-  //   ];
-
   return (
     <div className="configForm">
-      {/* Header */}
       <div className="configFormHeader">
         <h2 className="configFormTitle">Slack Configuration</h2>
         <p className="configFormDescription">
@@ -135,9 +96,7 @@ const SlackConfig: React.FC<SlackConfigProps> = ({
         </p>
       </div>
 
-      {/* Form Fields */}
       <div className="configFormFields">
-        {/* Channel Selection */}
         <div className="configFormField">
           <label className="configFormLabel">Common Channels</label>
           <select
@@ -157,27 +116,6 @@ const SlackConfig: React.FC<SlackConfigProps> = ({
           </div>
         </div>
 
-        {/* Message Templates
-        <div className="configFormField">
-          <label className="configFormLabel">Message Templates</label>
-          <select
-            className="configFormSelect"
-            value={config.template}
-            onChange={(e) => handleChange("message", e.target.value)}
-          >
-            <option value="">Choose a message template (optional)</option>
-            {messageTemplates.map((template) => (
-              <option key={template.label} value={template.value}>
-                {template.label}
-              </option>
-            ))}
-          </select>
-          <div className="configFormHelp">
-            Select a pre-made message or write your own below
-          </div>
-        </div> */}
-
-        {/* Message Input */}
         <div
           className={`configFormField ${
             errors.message ? "configFormField--error" : ""
@@ -203,7 +141,6 @@ const SlackConfig: React.FC<SlackConfigProps> = ({
           </div>
         </div>
 
-        {/* Message Preview */}
         <div className="configFormField">
           <label className="configFormLabel">Preview</label>
           <div
@@ -228,7 +165,6 @@ const SlackConfig: React.FC<SlackConfigProps> = ({
         </div>
       </div>
 
-      {/* Action Buttons */}
       <div className="configFormActions">
         <button
           className="configFormButton configFormButtonSecondary"

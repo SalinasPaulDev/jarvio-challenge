@@ -1,4 +1,3 @@
-// src/components/configs/GmailConfig.tsx
 import React, { useState, useEffect } from "react";
 import { useConfigStore } from "../../store/configStore";
 import { type GmailConfig as GmailConfigType } from "../../types/blocks";
@@ -16,25 +15,20 @@ const GmailConfig: React.FC<GmailConfigProps> = ({
   onCancel,
 }) => {
   const { getGmailConfig, updateGmailConfig } = useConfigStore();
-
-  // Local state for form
   const [config, setConfig] = useState<GmailConfigType>(() =>
     getGmailConfig(blockId)
   );
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  // Update local state when blockId changes
   useEffect(() => {
     setConfig(getGmailConfig(blockId));
   }, [blockId, getGmailConfig]);
 
-  // Email validation function
   const isValidEmail = (email: string): boolean => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   };
 
-  // Validation function
   const validateConfig = (
     configToValidate: GmailConfigType
   ): Record<string, string> => {
@@ -70,7 +64,6 @@ const GmailConfig: React.FC<GmailConfigProps> = ({
     return newErrors;
   };
 
-  // Handle form submission
   const handleSave = () => {
     const validationErrors = validateConfig(config);
     setErrors(validationErrors);
@@ -81,11 +74,9 @@ const GmailConfig: React.FC<GmailConfigProps> = ({
     }
   };
 
-  // Handle input changes
   const handleChange = (field: keyof GmailConfigType, value: string) => {
     setConfig((prev) => ({ ...prev, [field]: value }));
 
-    // Clear error when user starts typing
     if (errors[field]) {
       setErrors((prev) => ({ ...prev, [field]: "" }));
     }
@@ -93,7 +84,6 @@ const GmailConfig: React.FC<GmailConfigProps> = ({
 
   return (
     <div className="configForm">
-      {/* Header */}
       <div className="configFormHeader">
         <h2 className="configFormTitle">Gmail Configuration</h2>
         <p className="configFormDescription">
@@ -102,9 +92,7 @@ const GmailConfig: React.FC<GmailConfigProps> = ({
         </p>
       </div>
 
-      {/* Form Fields */}
       <div className="configFormFields">
-        {/* Recipient Email */}
         <div
           className={`configFormField ${
             errors.recipientEmail ? "configFormField--error" : ""
@@ -128,7 +116,6 @@ const GmailConfig: React.FC<GmailConfigProps> = ({
           </div>
         </div>
 
-        {/* Email Subject */}
         <div
           className={`configFormField ${
             errors.subject ? "configFormField--error" : ""
@@ -149,7 +136,6 @@ const GmailConfig: React.FC<GmailConfigProps> = ({
           )}
         </div>
 
-        {/* Email Message Body */}
         <div
           className={`configFormField ${
             errors.messageBody ? "configFormField--error" : ""
@@ -175,7 +161,6 @@ const GmailConfig: React.FC<GmailConfigProps> = ({
         </div>
       </div>
 
-      {/* Action Buttons */}
       <div className="configFormActions">
         <button
           className="configFormButton configFormButtonSecondary"

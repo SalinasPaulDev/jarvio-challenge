@@ -1,4 +1,3 @@
-// src/components/configs/AIConfig.tsx
 import React, { useState, useEffect } from "react";
 import { useConfigStore } from "../../store/configStore";
 import { type AIAgentConfig } from "../../types/blocks";
@@ -12,19 +11,15 @@ interface AIConfigProps {
 
 const AIConfig: React.FC<AIConfigProps> = ({ blockId, onSave, onCancel }) => {
   const { getAIConfig, updateAIConfig } = useConfigStore();
-
-  // Local state for form
   const [config, setConfig] = useState<AIAgentConfig>(() =>
     getAIConfig(blockId)
   );
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  // Update local state when blockId changes
   useEffect(() => {
     setConfig(getAIConfig(blockId));
   }, [blockId, getAIConfig]);
 
-  // Validation function
   const validateConfig = (
     configToValidate: AIAgentConfig
   ): Record<string, string> => {
@@ -43,7 +38,6 @@ const AIConfig: React.FC<AIConfigProps> = ({ blockId, onSave, onCancel }) => {
     return newErrors;
   };
 
-  // Handle form submission
   const handleSave = () => {
     const validationErrors = validateConfig(config);
     setErrors(validationErrors);
@@ -54,17 +48,14 @@ const AIConfig: React.FC<AIConfigProps> = ({ blockId, onSave, onCancel }) => {
     }
   };
 
-  // Handle input changes
   const handleChange = (field: keyof AIAgentConfig, value: string) => {
     setConfig((prev) => ({ ...prev, [field]: value }));
 
-    // Clear error when user starts typing
     if (errors[field]) {
       setErrors((prev) => ({ ...prev, [field]: "" }));
     }
   };
 
-  // Predefined prompt templates
   const promptTemplates = [
     {
       label: "Sales Analysis",
@@ -83,11 +74,10 @@ const AIConfig: React.FC<AIConfigProps> = ({ blockId, onSave, onCancel }) => {
     },
     {
       label: "Custom",
-      value: "",
+      value: " ",
     },
   ];
 
-  // Handle template selection
   const handleTemplateSelect = (templateValue: string) => {
     if (templateValue) {
       handleChange("systemPrompt", templateValue);
@@ -96,7 +86,6 @@ const AIConfig: React.FC<AIConfigProps> = ({ blockId, onSave, onCancel }) => {
 
   return (
     <div className="configForm">
-      {/* Header */}
       <div className="configFormHeader">
         <h2 className="configFormTitle">AI Agent</h2>
         <p className="configFormDescription">
@@ -106,9 +95,7 @@ const AIConfig: React.FC<AIConfigProps> = ({ blockId, onSave, onCancel }) => {
         </p>
       </div>
 
-      {/* Form Fields */}
       <div className="configFormFields">
-        {/* Template Selection */}
         <div className="configFormField">
           <label className="configFormLabel">Prompt Template</label>
           <select
@@ -116,7 +103,6 @@ const AIConfig: React.FC<AIConfigProps> = ({ blockId, onSave, onCancel }) => {
             value={config.systemPrompt}
             onChange={(e) => handleTemplateSelect(e.target.value)}
           >
-            <option value="">Choose a template (optional)</option>
             {promptTemplates.map((template) => (
               <option key={template.label} value={template.value}>
                 {template.label}
@@ -128,7 +114,6 @@ const AIConfig: React.FC<AIConfigProps> = ({ blockId, onSave, onCancel }) => {
           </div>
         </div>
 
-        {/* System Prompt */}
         <div
           className={`configFormField ${
             errors.systemPrompt ? "configFormField--error" : ""
@@ -154,7 +139,6 @@ const AIConfig: React.FC<AIConfigProps> = ({ blockId, onSave, onCancel }) => {
           </div>
         </div>
 
-        {/* Character Count */}
         <div className="configFormField">
           <div
             className="configFormHelp"
@@ -165,7 +149,6 @@ const AIConfig: React.FC<AIConfigProps> = ({ blockId, onSave, onCancel }) => {
         </div>
       </div>
 
-      {/* Action Buttons */}
       <div className="configFormActions">
         <button
           className="configFormButton configFormButtonSecondary"

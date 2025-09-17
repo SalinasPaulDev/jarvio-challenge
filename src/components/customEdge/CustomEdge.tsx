@@ -1,4 +1,3 @@
-// src/components/edges/CustomEdge.tsx
 import React from "react";
 import {
   type EdgeProps,
@@ -22,7 +21,6 @@ export const CustomEdge: React.FC<EdgeProps> = ({
 }) => {
   const { setEdges } = useReactFlow();
 
-  // Calculate the smooth step path
   const [edgePath, labelX, labelY] = getSmoothStepPath({
     sourceX,
     sourceY,
@@ -32,7 +30,6 @@ export const CustomEdge: React.FC<EdgeProps> = ({
     targetPosition,
   });
 
-  // Handle edge deletion
   const onEdgeClick = (event: React.MouseEvent) => {
     event.stopPropagation();
     setEdges((edges) => edges.filter((edge) => edge.id !== id));
@@ -40,7 +37,6 @@ export const CustomEdge: React.FC<EdgeProps> = ({
 
   return (
     <>
-      {/* The actual edge path */}
       <BaseEdge
         path={edgePath}
         markerEnd={markerEnd}
@@ -51,7 +47,6 @@ export const CustomEdge: React.FC<EdgeProps> = ({
         }}
       />
 
-      {/* Edge label with delete button */}
       <EdgeLabelRenderer>
         <div
           style={{

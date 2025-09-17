@@ -1,4 +1,3 @@
-// src/hooks/useTestRunner.ts
 import { useCallback, useState } from "react";
 import {
   BlockState,
@@ -12,6 +11,9 @@ import type { Node, Edge } from "@xyflow/react";
 import { useCompletionStore } from "../store/completionStore";
 import { useConfigStore } from "../store/configStore";
 import { useProcessTrackerStore } from "../store/processTrackerStore";
+import { useConfirmationModalStore } from "../store/confirmationModalStore";
+import { createStepMapping, getExecutionLevels } from "../utils/levelsHandler";
+import { getBlockWithoutDependenciesNorSource } from "../utils/nodesHandler";
 
 interface TestRunnerState {
   isRunning: boolean;
@@ -27,8 +29,7 @@ export const useTestRunner = (
     isRunning: false,
     currentBlockId: null,
   });
-
-  // Get completion store and config store
+  const { showConfirmationModal } = useConfirmationModalStore();
   const { checkBlockCompletion } = useCompletionStore();
   const { getAIConfig, getAmazonConfig, getGmailConfig, getSlackConfig } =
     useConfigStore();
@@ -36,11 +37,67 @@ export const useTestRunner = (
     startProcess,
     updateStep,
     completeProcess,
-    resetProcess,
+    setCurrentLevel,
     setProcessMessage,
   } = useProcessTrackerStore();
 
-  // Check if a block is properly configured
+  const updateMultipleSteps = useCallback(
+    (
+      blockIds: string[],
+      state: BlockState,
+      levelIndex: number,
+      errorMessage = ""
+    ) => {
+      // Get execution levels and step mapping
+      const levels = getExecutionLevels(nodes, edges);
+      const stepMapping = createStepMapping(levels);
+
+      blockIds.forEach((blockId) => {
+        const block = nodes.find((n) => n.id === blockId);
+        const stepIndex = stepMapping.get(blockId);
+
+        // Get correct configuration for each block
+        let config = null;
+        const blockType = block?.data?.type as BlockType;
+
+        switch (blockType) {
+          case BlockType.AI_AGENT:
+            config = getAIConfig(blockId);
+            break;
+          case BlockType.AMAZON_SALES:
+            config = getAmazonConfig(blockId);
+            break;
+          case BlockType.GMAIL:
+            config = getGmailConfig(blockId);
+            break;
+          case BlockType.SLACK:
+            config = getSlackConfig(blockId);
+            break;
+        }
+
+        updateStep(
+          stepIndex,
+          blockId,
+          blockType,
+          block?.data?.label as string,
+          state,
+          levelIndex,
+          config,
+          errorMessage
+        );
+      });
+    },
+    [
+      nodes,
+      edges,
+      getAIConfig,
+      getAmazonConfig,
+      getGmailConfig,
+      getSlackConfig,
+      updateStep,
+    ]
+  );
+
   const isBlockComplete = useCallback(
     (blockId: string, blockType: BlockType): boolean => {
       let config: unknown = null;
@@ -59,7 +116,7 @@ export const useTestRunner = (
           config = getSlackConfig(blockId);
           break;
         default:
-          return true; // Unknown types are considered complete
+          return true;
       }
 
       return checkBlockCompletion(
@@ -82,217 +139,95 @@ export const useTestRunner = (
     ]
   );
 
-  // Find the leftmost block (starting point)
-  const findStartingBlock = useCallback((): Node | null => {
-    if (nodes.length === 0) return null;
-
-    // Find the leftmost block by x position
-    return nodes.reduce((leftmost, current) => {
-      return current.position.x < leftmost.position.x ? current : leftmost;
-    });
-  }, [nodes]);
-
-  // Find the next connected block
-  const findNextBlock = useCallback(
-    (currentBlockId: string): Node | null => {
-      // Find edge that has current block as source
-      const outgoingEdge = edges.find((edge) => edge.source === currentBlockId);
-
-      if (!outgoingEdge) return null;
-
-      // Find the target node
-      return nodes.find((node) => node.id === outgoingEdge.target) || null;
-    },
-    [edges, nodes]
-  );
-
-  // Get execution flow (sequence of blocks from left to right)
-  const getExecutionFlow = useCallback((): Node[] => {
-    const flow: Node[] = [];
-    const startingBlock = findStartingBlock();
-
-    if (!startingBlock) return flow;
-
-    let currentBlock: Node | null = startingBlock;
-    const visited = new Set<string>();
-
-    // Build the connected flow
-    while (currentBlock && !visited.has(currentBlock.id)) {
-      visited.add(currentBlock.id);
-      flow.push(currentBlock);
-      currentBlock = findNextBlock(currentBlock.id);
-    }
-
-    return flow;
-  }, [findStartingBlock, findNextBlock]);
-
-  // Execute a single block with loading animation
   const executeBlock = useCallback(
-    async (blockId: string, stepIndex: number): Promise<boolean> => {
-      // Find the block to get its type
+    async (blockId: string): Promise<boolean> => {
       const block = nodes.find((node) => node.id === blockId);
       if (!block) return false;
 
       const blockType = block.data.type as BlockType;
-
-      // Get block configuration
-      let config:
-        | AIAgentConfig
-        | AmazonSalesConfig
-        | GmailConfig
-        | SlackConfig
-        | null = null;
-      switch (blockType) {
-        case BlockType.AI_AGENT:
-          config = getAIConfig(blockId);
-          break;
-        case BlockType.AMAZON_SALES:
-          config = getAmazonConfig(blockId);
-          break;
-        case BlockType.GMAIL:
-          config = getGmailConfig(blockId);
-          break;
-        case BlockType.SLACK:
-          config = getSlackConfig(blockId);
-          break;
-      }
-
-      // Check if block is properly configured
       const isComplete = isBlockComplete(blockId, blockType);
 
       if (!isComplete) {
-        // Update process tracker with error - this stops the progress
-        updateStep(
-          stepIndex,
-          blockId,
-          blockType,
-          block.data.label as string,
-          BlockState.ERROR,
-          config,
-          "Block configuration is incomplete. Please configure this block and try again."
-        );
-
-        // Set block to error state if not properly configured
         updateBlockState(blockId, BlockState.ERROR);
-
-        // Update overall process message to show error and retry instruction
-        setProcessMessage(
-          `Test failed: ${block.data.label} is not properly configured. Complete the configuration and click 'Run Test' to retry.`
-        );
-
-        console.log(`Block ${block.data.type} is not properly configured`);
         return false;
       }
 
-      // Update process tracker to running state
-      updateStep(
-        stepIndex,
-        blockId,
-        blockType,
-        block.data.label as string,
-        BlockState.RUNNING,
-        config
-      );
-
-      // Set block to running state
       updateBlockState(blockId, BlockState.RUNNING);
-
-      // Wait 2 seconds to show loading state
       await new Promise((resolve) => setTimeout(resolve, 2000));
-
-      // Update process tracker to success state
-      updateStep(
-        stepIndex,
-        blockId,
-        blockType,
-        block.data.label as string,
-        BlockState.SUCCESS,
-        config
-      );
-
       updateBlockState(blockId, BlockState.SUCCESS);
 
       return true;
     },
-    [
-      updateBlockState,
-      nodes,
-      isBlockComplete,
-      updateStep,
-      setProcessMessage,
-      getAIConfig,
-      getAmazonConfig,
-      getGmailConfig,
-      getSlackConfig,
-    ]
+    [updateBlockState, nodes, isBlockComplete]
   );
 
-  // Main test runner function
+  // Main test runner
   const runTest = useCallback(async () => {
     if (testState.isRunning) return;
 
-    // Reset all blocks to idle state first
-    nodes.forEach((node) => {
-      updateBlockState(node.id, BlockState.IDLE);
-    });
+    if (getBlockWithoutDependenciesNorSource(nodes, edges).length > 0) {
+      const userWantsToContinue = await showConfirmationModal();
 
-    const executionFlow = getExecutionFlow();
+      if (!userWantsToContinue) {
+        return;
+      }
+    }
 
-    if (executionFlow.length === 0) {
+    nodes.forEach((node) => updateBlockState(node.id, BlockState.IDLE));
+
+    const levels = getExecutionLevels(nodes, edges);
+    const totalSteps = levels.flat().length;
+
+    if (levels.length === 0) {
       setProcessMessage("No blocks found on canvas");
       return;
     }
 
-    // Start the process tracking
-    startProcess(executionFlow.length);
+    startProcess(totalSteps, levels.length);
 
-    setTestState({
-      isRunning: true,
-      currentBlockId: null,
-    });
+    setTestState({ isRunning: true, currentBlockId: null });
 
     try {
-      // Execute each block in the flow sequence
-      for (let i = 0; i < executionFlow.length; i++) {
-        const currentBlock = executionFlow[i];
+      for (let levelIndex = 0; levelIndex < levels.length; levelIndex++) {
+        const level = levels[levelIndex];
 
-        // Update current block being executed
-        setTestState((prev) => ({
-          ...prev,
-          currentBlockId: currentBlock.id,
-        }));
+        setCurrentLevel(levelIndex);
 
-        // Execute current block with step index
-        const success = await executeBlock(currentBlock.id, i);
+        updateMultipleSteps(
+          level.map((block) => block.id),
+          BlockState.RUNNING,
+          levelIndex
+        );
 
-        // If execution failed, STOP the entire process immediately
-        if (!success) {
-          setTestState({
-            isRunning: false,
-            currentBlockId: null,
+        const promises = level.map((block) => executeBlock(block.id));
+        const results = await Promise.all(promises);
+
+        if (results.some((result) => !result)) {
+          level.forEach((block, index) => {
+            const blockResult = results[index];
+            const newState = blockResult
+              ? BlockState.SUCCESS
+              : BlockState.ERROR;
+            const errorMessage = blockResult
+              ? ""
+              : "Block configuration is incomplete";
+
+            updateMultipleSteps([block.id], newState, levelIndex, errorMessage);
           });
-          // Don't call completeProcess() - leave it in error state
+
+          setTestState({ isRunning: false, currentBlockId: null });
           return;
         }
+
+        updateMultipleSteps(
+          level.map((block) => block.id),
+          BlockState.SUCCESS,
+          levelIndex
+        );
       }
 
-      const nodesNotInFlow = nodes.filter(
-        (node) => !executionFlow.some((flowBlock) => flowBlock.id === node.id)
-      );
-
-      // Mark nodes not in execution flow as ERROR
-      nodesNotInFlow.forEach((node) => {
-        updateBlockState(node.id, BlockState.ERROR);
-      });
-
-      // Complete the process only if all steps succeeded
       completeProcess();
-
-      // Test completed successfully
-      setTestState({
-        isRunning: false,
-        currentBlockId: null,
-      });
+      setTestState({ isRunning: false, currentBlockId: null });
     } catch (error) {
       console.error("Error running test:", error);
       setProcessMessage(
@@ -306,34 +241,18 @@ export const useTestRunner = (
   }, [
     testState.isRunning,
     nodes,
-    getExecutionFlow,
     executeBlock,
     updateBlockState,
+    edges,
     startProcess,
     completeProcess,
     setProcessMessage,
+    updateMultipleSteps,
+    isBlockComplete,
   ]);
-
-  // Stop test execution
-  const stopTest = useCallback(() => {
-    setTestState({
-      isRunning: false,
-      currentBlockId: null,
-    });
-
-    // Reset all blocks to idle
-    nodes.forEach((node) => {
-      updateBlockState(node.id, BlockState.IDLE);
-    });
-
-    // Reset process tracker
-    resetProcess();
-  }, [nodes, updateBlockState, resetProcess]);
 
   return {
     ...testState,
     runTest,
-    stopTest,
-    executionFlow: getExecutionFlow(),
   };
 };
