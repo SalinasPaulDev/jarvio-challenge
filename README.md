@@ -16,6 +16,47 @@ A powerful visual workflow automation platform that allows you to create, config
 - **🔗 Smart Dependencies**: Automatic dependency resolution and execution ordering
 - **🎯 Multiple Integrations**: Support for Amazon Sales, AI Agents, Gmail, and Slack
 
+## 🧠 Business Logic & Execution Strategy
+
+Vibe Canvas implements an intelligent **level-based execution system** that optimizes workflow performance and user productivity through parallel processing and dependency management.
+
+### **Level-Based Execution Model**
+
+The system automatically organizes your workflow into **execution levels** based on block dependencies:
+
+- **Level 1**: Blocks with no dependencies execute first
+- **Level 2**: Blocks that depend on Level 1 blocks execute next
+- **Level N**: Each subsequent level waits for its dependencies to complete
+
+### **Parallel Processing Benefits**
+
+**Synchronous Execution Within Levels**: All blocks in the same level run simultaneously, enabling:
+
+- **⚡ Faster Execution**: Multiple independent tasks process in parallel
+- **🚀 Increased Throughput**: Handle multiple data streams simultaneously
+- **⚖️ Resource Optimization**: Maximize system efficiency by utilizing available processing power
+- **🔄 Scalable Workflows**: Add more parallel branches without linear time increase
+
+### **Why This Approach Works**
+
+1. **Dependency Resolution**: The system automatically detects which blocks can run independently
+2. **Risk Mitigation**: Prevents execution errors by ensuring dependencies are met
+3. **User Experience**: Users can create complex workflows without worrying about execution order
+4. **Performance**: Parallel execution reduces total processing time significantly
+5. **Flexibility**: Supports both simple linear flows and complex branching workflows
+
+### **Real-World Example**
+
+```
+Level 1: [Amazon Sales] [Gmail] [Slack] → Execute simultaneously
+    ↓
+Level 2: [AI Agent] → Waits for Amazon Sales data
+    ↓
+Level 3: [Final Report] → Waits for AI analysis
+```
+
+This approach allows users to **create faster, more efficient workflows** while maintaining data integrity and execution reliability.
+
 ## 🏗️ Architecture
 
 Vibe Canvas is built with a modern, scalable architecture:
