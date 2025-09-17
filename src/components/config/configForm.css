@@ -1,0 +1,183 @@
+/* src/components/configs/configForm.css */
+
+/* Configuration Form Container */
+.configForm {
+  padding: 24px;
+  padding-bottom: 50px;
+  max-width: 500px;
+  width: 100%;
+}
+
+/* Header Section */
+.configFormHeader {
+  margin-bottom: 24px;
+  text-align: center;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 16px;
+}
+
+.configFormIcon {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 12px auto;
+  display: block;
+}
+
+.configFormTitle {
+  font-size: 24px;
+  font-weight: bold;
+  color: #111827;
+  margin: 0 0 8px 0;
+}
+
+.configFormDescription {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Form Fields */
+.configFormFields {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.configFormField {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.configFormLabel {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.configFormRequired {
+  color: #ef4444;
+  font-size: 12px;
+}
+
+/* Input Styles */
+.configFormInput,
+.configFormSelect,
+.configFormTextarea {
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #111827;
+  background-color: #ffffff;
+  transition: all 0.2s ease;
+}
+
+.configFormInput:focus,
+.configFormSelect:focus,
+.configFormTextarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.configFormInput::placeholder,
+.configFormTextarea::placeholder {
+  color: #9ca3af;
+}
+
+/* Textarea Specific */
+.configFormTextarea {
+  resize: vertical;
+  min-height: 80px;
+  font-family: inherit;
+}
+
+/* Select Specific */
+.configFormSelect {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 8px center;
+  background-repeat: no-repeat;
+  background-size: 16px;
+  padding-right: 32px;
+}
+
+/* Help Text */
+.configFormHelp {
+  font-size: 12px;
+  color: #6b7280;
+  margin-top: 4px;
+  line-height: 1.4;
+}
+
+/* Action Buttons */
+.configFormActions {
+  margin-top: 32px;
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  padding-top: 20px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.configFormButton {
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.configFormButtonPrimary {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.configFormButtonPrimary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.configFormButtonPrimary:hover {
+  background-color: #2563eb;
+}
+
+.configFormButtonSecondary {
+  background-color: #f9fafb;
+  color: #374151;
+  border-color: #d1d5db;
+}
+
+.configFormButtonSecondary:hover {
+  background-color: #f3f4f6;
+}
+
+/* Error States */
+.configFormField--error .configFormInput,
+.configFormField--error .configFormSelect,
+.configFormField--error .configFormTextarea {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.configFormError {
+  font-size: 12px;
+  color: #ef4444;
+  margin-top: 4px;
+}
+
+/* Success States */
+.configFormField--success .configFormInput,
+.configFormField--success .configFormSelect,
+.configFormField--success .configFormTextarea {
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}

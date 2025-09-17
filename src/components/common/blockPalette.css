@@ -1,0 +1,157 @@
+.blockPalette {
+  position: absolute;
+  top: 100px; /* Below the header */
+  left: 10px;
+  z-index: 10;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 16px;
+  min-width: 200px;
+}
+
+.blockPaletteHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 30px;
+}
+
+.blockPaletteLogo {
+  width: 30px;
+  height: 30px;
+}
+
+.blockPaletteTitle {
+  margin: 0 0 12px 0;
+  font-size: 16px;
+  font-weight: bold;
+  color: #374151;
+}
+
+.blockPaletteBlocks {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.blockPaletteItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  color: white;
+  border-radius: 8px;
+  cursor: grab;
+  transition: all 0.2s ease;
+  user-select: none;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.blockPaletteItem:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.blockPaletteItem:active {
+  cursor: grabbing;
+}
+
+.blockPaletteItemIcon {
+  width: 24px;
+  height: 24px;
+}
+
+.blockPaletteItemLabel {
+  font-weight: bold;
+}
+
+.blockPaletteItemDescription {
+  font-size: 11px;
+  opacity: 0.9;
+  margin-top: 2px;
+}
+
+.blockPaletteInstructions {
+  margin-top: 12px;
+  padding: 8px;
+  background-color: #f3f4f6;
+  border-radius: 6px;
+  font-size: 11px;
+  color: #6b7280;
+  text-align: center;
+}
+
+.runTestButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  padding: 8px 16px;
+  background-color: rgba(176, 230, 176, 0.712);
+  color: #000000;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.runTestButton:hover {
+  transform: translateY(-1px);
+}
+
+/* Add this to your existing blockPalette.css */
+.blockPaletteRunTestButton:hover:not(:disabled) {
+  background-color: #059669;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.blockPaletteRunTestButton:disabled {
+  opacity: 0.7;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Add this to your existing blockPalette.css */
+
+/* Run Test Button States */
+.runTestButton--running {
+  opacity: 0.8;
+  cursor: not-allowed;
+}
+
+.runTestButton__spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Disable button hover when running */
+.runTestButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.runTestButton:disabled:hover {
+  transform: none;
+  box-shadow: none;
+}

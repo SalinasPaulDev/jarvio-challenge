@@ -1,0 +1,160 @@
+/* src/components/common/configModal.css */
+
+/* Modal Overlay */
+.configModalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+  animation: fadeIn 0.2s ease-out;
+}
+
+/* Modal Container */
+.configModal {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  max-width: 800px;
+  margin: 0 auto;
+  width: 100%;
+  max-height: 90vh;
+  overflow: hidden;
+  animation: slideIn 0.3s ease-out;
+  position: relative;
+}
+
+/* Modal Header */
+.configModalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px 16px 24px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.configModalTitle {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.configModalCloseButton {
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+}
+
+.configModalCloseButton:hover {
+  background-color: #f3f4f6;
+  color: #374151;
+}
+
+.configModalCloseButton:active {
+  background-color: #e5e7eb;
+}
+
+/* Modal Content */
+.configModalContent {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 24px;
+  overflow-y: auto;
+  max-height: calc(90vh - 80px);
+}
+
+/* Modal without header */
+.configModal:not(:has(.configModalHeader)) .configModalContent {
+  padding: 24px;
+}
+
+.configModal::-webkit-scrollbar,
+.configModalContent::-webkit-scrollbar {
+  display: none;
+}
+
+.configModal,
+.configModalContent {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 640px) {
+  .configModalOverlay {
+    padding: 16px;
+  }
+
+  .configModal {
+    max-width: 100%;
+    margin: 0;
+  }
+
+  .configModalHeader {
+    padding: 16px 20px 12px 20px;
+  }
+
+  .configModalContent {
+    padding: 20px;
+  }
+
+  .configModalTitle {
+    font-size: 16px;
+  }
+}
+
+/* Focus management */
+.configModal:focus {
+  outline: none;
+}
+
+/* Backdrop click area */
+.configModalOverlay::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+}

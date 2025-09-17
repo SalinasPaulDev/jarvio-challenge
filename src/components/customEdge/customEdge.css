@@ -1,0 +1,30 @@
+/* src/components/edges/customEdge.css */
+
+.custom-edge-button {
+  width: fit-content;
+  padding: 0;
+  margin: 0;
+  background-color: transparent;
+  cursor: pointer;
+  color: white;
+  transition: all 0.2s ease;
+}
+
+.custom-edge-button:hover {
+  transform: scale(1.05);
+  border: none;
+  outline: none;
+}
+
+.custom-edge-button:active {
+  transform: scale(0.95);
+  outline: none;
+  border: none;
+}
+
+/* Hide button on mobile to prevent accidental deletion */
+@media (max-width: 768px) {
+  .custom-edge-button {
+    display: none;
+  }
+}
