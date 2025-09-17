@@ -79,7 +79,7 @@ Vibe Canvas is built with a modern, scalable architecture:
 1. **Clone the repository**
 
    ```bash
-   git clone https://github.com/yourusername/vibe-canvas.git
+   git clone https://github.com/SalinasPaulDev/jarvio-challenge.git
    cd vibe-canvas
    ```
 
