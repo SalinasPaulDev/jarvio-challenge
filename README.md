@@ -57,6 +57,55 @@ Level 3: [Final Report] → Waits for AI analysis
 
 This approach allows users to **create faster, more efficient workflows** while maintaining data integrity and execution reliability.
 
+## 🤖 AI-Assisted Development
+
+To complete the Vibe-Coding challenge, this project was developed using **AI-powered coding tools** to demonstrate modern development practices and rapid prototyping capabilities.
+
+### **Tools Used**
+
+- **Cursor AI** - Intelligent code editor with AI assistance
+- **Claude AI** - Advanced language model for code generation and architecture guidance
+
+### **Development Approach**
+
+The project was built using an **iterative, AI-assisted development workflow**:
+
+1. **Initial Planning**: Created comprehensive checklist of development phases
+2. **Step-by-Step Implementation**: Broke down complex features into manageable tasks
+3. **Continuous Refinement**: Iterative improvements based on AI feedback and testing
+
+### **Initial Prompt Used**
+
+```text
+Hi! I need to create a Canvas project to use for an interview where the Canvas should add 4 different blocks.
+
+The specifications about the project are:
+- Design a simple interactive canvas where a user can add 4 block types, connect them, configure them, and run a test flow
+- The run should animate step by step and show success or failure at each block
+- I initialized the project already using Vite with TypeScript
+
+You are going to help me with the whole project, but I need to go step by step.
+
+First create a checklist of all the steps I have to follow, and we are going to complete it together when I tell you that I finished already.
+
+I want to do first the setup of React Flow in my application to see the canvas. In each important line of code you are going to add a comment with the details of that, explaining to me why we did that.
+
+Remember always follow this workflow and use it as a context.
+
+More details of the project:
+Each block should have a configuration view with these options.
+Take this as a context to help to me in future task.
+
+```
+
+Then I added the following requirements that the company provided me.
+
+```
+- Blocks configuration
+- Canvas behavior
+- Product requirements
+```
+
 ## 🏗️ Architecture
 
 Vibe Canvas is built with a modern, scalable architecture:
