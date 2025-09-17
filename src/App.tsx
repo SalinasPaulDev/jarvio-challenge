@@ -22,7 +22,7 @@ import { createBlock, BLOCK_METADATA } from "./utils/blocks";
 import { CustomBlock } from "./components/blocks";
 import BlockPalette from "./components/common/BlockPalette/BlockPalette";
 import { useDragDrop } from "./hooks/useDragDrop";
-import "./components/blocks/CustomBlock.css";
+import "./components/blocks/customBlock.css";
 import { useBlockStates } from "./hooks/useBlockStates";
 import { useModalStore } from "./store/modalStore";
 import ModalManager from "./components/config/ModalManager";
