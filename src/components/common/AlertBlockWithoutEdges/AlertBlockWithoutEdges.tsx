@@ -25,8 +25,7 @@ export const AlertBlockWithoutEdges: React.FC = () => {
           }}
         ></div>
         <p>
-          There are blocks that are not connected to the main flow. The blocks
-          with no connections will be executed as a independent flow.
+        There are blocks that are not connected to the main flow. The blocks with no connections will be executed as an independent flow
           <br />
           <span style={{ fontWeight: "bold" }}>
             Do you want to continue anyway?
