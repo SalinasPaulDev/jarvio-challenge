@@ -10,6 +10,7 @@ interface BlockPaletteProps {
   onRunTest: () => void;
   isTestRunning: boolean;
   isDisabled: boolean;
+  isPaletteDisabled: boolean;
 }
 
 const BlockPalette: React.FC<BlockPaletteProps> = ({
@@ -17,6 +18,7 @@ const BlockPalette: React.FC<BlockPaletteProps> = ({
   onRunTest,
   isTestRunning,
   isDisabled,
+  isPaletteDisabled,
 }) => {
   return (
     <div className="blockPalette">
@@ -44,6 +46,7 @@ const BlockPalette: React.FC<BlockPaletteProps> = ({
       <h3 className="blockPaletteTitle">📦 Add a new block</h3>
 
       <div className="blockPaletteBlocks">
+        <div className={isPaletteDisabled ? "blockPalette--disabled" : ""} />
         {Object.values(BlockType).map((blockType) => {
           const metadata = BLOCK_METADATA[blockType];
 

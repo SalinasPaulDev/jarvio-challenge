@@ -3,13 +3,14 @@ import { Handle, Position, type NodeProps } from "@xyflow/react";
 import { BlockState, BlockType, type BlockData } from "../../types/blocks";
 import { BLOCK_METADATA, getBlockStateColor } from "../../utils/blocks";
 import { useModalStore } from "../../store/modalStore";
-import { Settings } from "lucide-react";
+import { Settings, CircleX } from "lucide-react";
 import { useConfigStore } from "../../store/configStore";
 import { useCompletionStore } from "../../store/completionStore";
 import "./customBlock.css";
 
 interface CustomBlockProps extends NodeProps {
   data: BlockData;
+  onDelete?: (blockId: string) => void;
 }
 
 const getBlockClassName = (selected: boolean, state: BlockState): string => {
@@ -54,7 +55,12 @@ const getStateClassName = (state: BlockState): string => {
   return className;
 };
 
-const CustomBlock: React.FC<CustomBlockProps> = ({ id, data, selected }) => {
+const CustomBlock: React.FC<CustomBlockProps> = ({
+  id,
+  data,
+  selected,
+  onDelete,
+}) => {
   const metadata = BLOCK_METADATA[data.type];
 
   const { openModal } = useModalStore();
@@ -110,6 +116,14 @@ const CustomBlock: React.FC<CustomBlockProps> = ({ id, data, selected }) => {
     openModal(data.type, id);
   };
 
+  const handleDeleteClick = (event: React.MouseEvent) => {
+    event.stopPropagation();
+
+    if (onDelete) {
+      onDelete(id);
+    }
+  };
+
   return (
     <div
       className={getBlockClassName(selected, data.state)}
@@ -118,6 +132,16 @@ const CustomBlock: React.FC<CustomBlockProps> = ({ id, data, selected }) => {
       }}
       onClick={handleBlockClick}
     >
+      {onDelete && (
+        <CircleX
+          size={14}
+          color="white"
+          fill="red"
+          onClick={handleDeleteClick}
+          className="deleteBlockIcon"
+        />
+      )}
+
       <div className={getIconClassName(data.state)}>
         {data.state === BlockState.SUCCESS ? (
           "✅"

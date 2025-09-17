@@ -10,13 +10,14 @@ import {
   ReactFlowProvider,
   type Edge,
   type Node,
+  type NodeProps,
   type OnNodesChange,
   type OnEdgesChange,
   type OnConnect,
   BackgroundVariant,
 } from "@xyflow/react";
 import { useTestRunner } from "./hooks/useTestRunner";
-import { BlockType } from "./types/blocks";
+import { BlockType, type BlockData } from "./types/blocks";
 import { createBlock, BLOCK_METADATA } from "./utils/blocks";
 import { CustomBlock } from "./components/blocks";
 import BlockPalette from "./components/common/BlockPalette/BlockPalette";
@@ -31,14 +32,9 @@ import "./components/customEdge/customEdge.css";
 import ProcessTracker from "./components/common/ProcessTracker/ProccessTracker";
 import { AlertBlockWithoutEdges } from "./components/common/AlertBlockWithoutEdges/AlertBlockWithoutEdges";
 
-const nodeTypes = {
-  customBlock: CustomBlock,
-};
-
 const edgeTypes = {
   custom: CustomEdge,
 };
-
 
 const initialNodes: Node[] = [
   {
@@ -116,6 +112,22 @@ function App() {
     [onDrop]
   );
 
+  const handleDeleteBlock = useCallback((blockId: string) => {
+    setNodes((nds) => nds.filter((node) => node.id !== blockId));
+    setEdges((eds) =>
+      eds.filter((edge) => edge.source !== blockId && edge.target !== blockId)
+    );
+  }, []);
+
+  const nodeTypes = {
+    customBlock: (props: NodeProps) => (
+      <CustomBlock
+        {...(props as NodeProps & { data: BlockData })}
+        onDelete={handleDeleteBlock}
+      />
+    ),
+  };
+
   return (
     <div style={{ width: "100vw", height: "100vh" }}>
       <BlockPalette
@@ -123,6 +135,7 @@ function App() {
         onRunTest={runTest}
         isTestRunning={testIsRunning}
         isDisabled={nodes.length === 0}
+        isPaletteDisabled={nodes.length >= 20}
       />
 
       <ReactFlow
