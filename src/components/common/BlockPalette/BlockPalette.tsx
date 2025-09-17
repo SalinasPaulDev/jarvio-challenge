@@ -45,8 +45,11 @@ const BlockPalette: React.FC<BlockPaletteProps> = ({
       </div>
       <h3 className="blockPaletteTitle">📦 Add a new block</h3>
 
-      <div className="blockPaletteBlocks">
-        <div className={isPaletteDisabled ? "blockPalette--disabled" : ""} />
+      <div
+        className={`blockPaletteBlocks ${
+          isPaletteDisabled ? "blockPalette--disabled" : ""
+        }`}
+      >
         {Object.values(BlockType).map((blockType) => {
           const metadata = BLOCK_METADATA[blockType];
 
@@ -55,7 +58,9 @@ const BlockPalette: React.FC<BlockPaletteProps> = ({
               key={blockType}
               className="blockPaletteItem"
               draggable
-              onDragStart={(event) => onDragStart(event, blockType)}
+              onDragStart={(event) =>
+                isPaletteDisabled ? null : onDragStart(event, blockType)
+              }
               style={{
                 backgroundColor: metadata.color,
               }}
@@ -77,9 +82,15 @@ const BlockPalette: React.FC<BlockPaletteProps> = ({
         })}
       </div>
 
-      <div className="blockPaletteInstructions">
-        💡 Drag blocks to the canvas to create your flow
-      </div>
+      {isPaletteDisabled ? (
+        <div className="blockPaletteErrorMessage">
+          ⚠️ You reached the maximum number of blocks
+        </div>
+      ) : (
+        <div className="blockPaletteInstructions">
+          💡 Drag blocks to the canvas to create your flow
+        </div>
+      )}
     </div>
   );
 };
