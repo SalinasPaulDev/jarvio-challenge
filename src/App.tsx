@@ -29,6 +29,7 @@ import ModalManager from "./components/config/ModalManager";
 import { CustomEdge } from "./components/customEdge/CustomEdge";
 import "@xyflow/react/dist/style.css";
 import "./components/customEdge/customEdge.css";
+import "./App.css";
 import ProcessTracker from "./components/common/ProcessTracker/ProccessTracker";
 import { AlertBlockWithoutEdges } from "./components/common/AlertBlockWithoutEdges/AlertBlockWithoutEdges";
 

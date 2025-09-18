@@ -21,77 +21,88 @@ const BlockPalette: React.FC<BlockPaletteProps> = ({
   isPaletteDisabled,
 }) => {
   return (
-    <div className="blockPalette">
-      <div className="blockPaletteHeader">
-        <img src={logo} alt="Logo" className="blockPaletteLogo" />
-        <button
-          className={`runTestButton ${
-            isTestRunning ? "runTestButton--running" : ""
-          }`}
-          onClick={onRunTest}
-          disabled={isTestRunning || isDisabled}
-        >
-          <span>{isTestRunning ? "Running..." : "Run Test"}</span>
-          {isTestRunning ? (
-            <Loader2
-              size={14}
-              color="orange"
-              className="runTestButton__spinner"
-            />
-          ) : (
-            <Play size={14} color="green" fill="green" />
-          )}
-        </button>
+    <>
+      <div className="blockPaletteMobileWarning">
+        📱 This app is not optimized for mobile view. Please use a computer to
+        access all functionalities. You can still run processes on mobile.
       </div>
-      <h3 className="blockPaletteTitle">📦 Add a new block</h3>
-
-      <div
-        className={`blockPaletteBlocks ${
-          isPaletteDisabled ? "blockPalette--disabled" : ""
-        }`}
-      >
-        {Object.values(BlockType).map((blockType) => {
-          const metadata = BLOCK_METADATA[blockType];
-
-          return (
-            <div
-              key={blockType}
-              className="blockPaletteItem"
-              draggable
-              onDragStart={(event) =>
-                isPaletteDisabled ? null : onDragStart(event, blockType)
-              }
-              style={{
-                backgroundColor: metadata.color,
-              }}
-            >
-              <img
-                src={metadata.icon}
-                alt={metadata.label}
-                className="blockPaletteItemIcon"
-              />
-
-              <div>
-                <div className="blockPaletteItemLabel">{metadata.label}</div>
-                <div className="blockPaletteItemDescription">
-                  {metadata.description}
-                </div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      {isPaletteDisabled ? (
-        <div className="blockPaletteErrorMessage">
+      {isPaletteDisabled && (
+        <div className="blockPaletteErrorMessage blockPaletteErrorMessage--mobile">
           ⚠️ You reached the maximum number of blocks
         </div>
-      ) : (
-        <div className="blockPaletteInstructions">
-          💡 Drag blocks to the canvas to create your flow
-        </div>
       )}
-    </div>
+      <div className="blockPalette">
+        <div className="blockPaletteHeader">
+          <img src={logo} alt="Logo" className="blockPaletteLogo" />
+          <button
+            className={`runTestButton ${
+              isTestRunning ? "runTestButton--running" : ""
+            }`}
+            onClick={onRunTest}
+            disabled={isTestRunning || isDisabled}
+          >
+            <span>{isTestRunning ? "Running..." : "Run Test"}</span>
+            {isTestRunning ? (
+              <Loader2
+                size={14}
+                color="orange"
+                className="runTestButton__spinner"
+              />
+            ) : (
+              <Play size={14} color="green" fill="green" />
+            )}
+          </button>
+        </div>
+        <h3 className="blockPaletteTitle">📦 Add a new block</h3>
+
+        <div
+          className={`blockPaletteBlocks ${
+            isPaletteDisabled ? "blockPalette--disabled" : ""
+          }`}
+        >
+          {Object.values(BlockType).map((blockType) => {
+            const metadata = BLOCK_METADATA[blockType];
+
+            return (
+              <div
+                key={blockType}
+                className="blockPaletteItem"
+                draggable
+                onDragStart={(event) =>
+                  isPaletteDisabled ? null : onDragStart(event, blockType)
+                }
+                style={{
+                  backgroundColor: metadata.color,
+                }}
+              >
+                <img
+                  src={metadata.icon}
+                  alt={metadata.label}
+                  className="blockPaletteItemIcon"
+                />
+
+                <div>
+                  <div className="blockPaletteItemLabel">{metadata.label}</div>
+                  <div className="blockPaletteItemDescription">
+                    {metadata.description}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {isPaletteDisabled ? (
+          <div className="blockPaletteErrorMessage blockPaletteErrorMessage--desktop">
+            ⚠️ You reached the maximum number of blocks
+          </div>
+        ) : (
+          <div className="blockPaletteInstructions">
+            💡 Drag blocks to the canvas to create your flow
+          </div>
+        )}
+      </div>
+    </>
   );
 };
 

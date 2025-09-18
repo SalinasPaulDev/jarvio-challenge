@@ -139,6 +139,18 @@
   text-align: center;
 }
 
+.blockPaletteErrorMessage--mobile {
+  display: none;
+}
+
+.blockPaletteErrorMessage--desktop {
+  display: block;
+}
+
+.blockPaletteMobileWarning {
+  display: none;
+}
+
 .runTestButton--running {
   opacity: 0.8;
   cursor: not-allowed;
@@ -165,4 +177,99 @@
 .runTestButton:disabled:hover {
   transform: none;
   box-shadow: none;
+}
+
+/* Mobile Styles */
+@media (max-width: 768px) {
+  .blockPalette {
+    top: 60px;
+    left: 5px;
+    width: 56px;
+    min-width: 56px;
+    padding: 8px;
+  }
+
+  .blockPaletteHeader {
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .blockPaletteTitle {
+    display: none;
+  }
+
+  .blockPaletteItemLabel,
+  .blockPaletteItemDescription {
+    display: none;
+  }
+
+  .blockPaletteBlocks {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .blockPaletteItem {
+    justify-content: center;
+    padding: 8px;
+    aspect-ratio: 1;
+    flex-direction: column;
+    width: 40px;
+    height: 40px;
+    margin: 0 auto;
+  }
+
+  .blockPaletteItemIcon {
+    width: 16px;
+    height: 16px;
+  }
+
+  .blockPaletteInstructions {
+    display: none;
+  }
+
+  .runTestButton span {
+    display: none;
+  }
+
+  .runTestButton {
+    padding: 12px;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    justify-content: center;
+  }
+
+  .blockPaletteErrorMessage--mobile {
+    display: block;
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    right: 5px;
+    z-index: 20;
+    margin-top: 0;
+  }
+
+  .blockPaletteErrorMessage--desktop {
+    display: none;
+  }
+
+  .blockPaletteMobileWarning {
+    display: block;
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    right: 5px;
+    z-index: 25;
+    padding: 8px;
+    background-color: #fef3c7;
+    border: 1px solid #f59e0b;
+    border-radius: 6px;
+    font-size: 11px;
+    color: #92400e;
+    text-align: center;
+    margin-bottom: 10px;
+  }
 }
